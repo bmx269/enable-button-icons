@@ -43,18 +43,24 @@ export function getIconStyle( {
 	let output = '';
 	const rules = [];
 	let svg = icon;
-	if ( iconName ) {
+	
+	// If we don't have the icon SVG string but we have an iconName, look it up
+	if ( ! svg && iconName ) {
 		const iconsAll = flattenIconsArray( getIcons() );
 		const namedIcon = iconsAll.filter( ( i ) => i.name === iconName );
-		if ( React.isValidElement( namedIcon[ 0 ].icon ) ) {
-			svg = ReactDOMServer.renderToString( namedIcon[ 0 ].icon );
-		} else {
-			svg = namedIcon[ 0 ].icon;
+		if ( namedIcon.length > 0 ) {
+			if ( React.isValidElement( namedIcon[ 0 ].icon ) ) {
+				svg = ReactDOMServer.renderToString( namedIcon[ 0 ].icon );
+			} else {
+				svg = namedIcon[ 0 ].icon;
+			}
 		}
 	}
+	
 	if ( ! svg ) {
 		return output;
 	}
+	
 	const dataUri = svgToDataUri( svg );
 	rules.push( `mask-image: url( ${ dataUri } );` );
 	rules.push( `-webkit-mask-image: url( ${ dataUri } );` );
@@ -63,8 +69,8 @@ export function getIconStyle( {
 	}
 	if ( rules.length ) {
 		output = `${ appendSelectors( selector ) } {
-            ${ rules.join( '; ' ) };
-        }`;
+			${ rules.join( '; ' ) };
+		}`;
 	}
 	return output;
 }
