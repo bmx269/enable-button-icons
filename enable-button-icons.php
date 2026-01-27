@@ -3,7 +3,7 @@
  * Plugin Name:         Enable Button Icons
  * Plugin URI:          https://www.nickdiego.com/
  * Description:         Easily add icons to Button blocks.
- * Version:             0.1.0
+ * Version:             0.2.0
  * Requires at least:   6.3
  * Requires PHP:        7.4
  * Author:              Nick Diego
@@ -76,13 +76,16 @@ add_action( 'init', 'enable_button_icons_block_styles' );
  * Render icons on the frontend.
  */
 function enable_button_icons_render_block_button( $block_content, $block ) {
-	if ( ! isset( $block['attrs']['icon'] ) ) {
+	if ( ! isset( $block['attrs']['icon'] ) && ! isset( $block['attrs']['iconName'] ) ) {
 		return $block_content;
 	}
 	
-	$icon         = $block['attrs']['icon'];
-	$icon_name	  = $block['attrs']['iconName'] ? $block['attrs']['iconName'] : 'custom';
-	$positionLeft = isset( $block['attrs']['iconPositionLeft'] ) ? $block['attrs']['iconPositionLeft'] : false;
+	$icon                = $block['attrs']['icon'];
+	$icon_name           = $block['attrs']['iconName'] ? $block['attrs']['iconName'] : 'custom';
+	$positionLeft        = isset( $block['attrs']['iconPositionLeft'] ) ? $block['attrs']['iconPositionLeft'] : false;
+	$justifySpaceBetween = isset( $block['attrs']['justifySpaceBetween'] ) ? $block['attrs']['justifySpaceBetween'] : false;
+	$hasNoIconFill       = isset( $block['attrs']['hasNoIconFill'] ) ? $block['attrs']['hasNoIconFill'] : false;
+	
 	$icon_color_class = '';
 	$icon_color = '';
 	if( isset( $block['attrs']['iconColor'] ) ){
@@ -95,6 +98,12 @@ function enable_button_icons_render_block_button( $block_content, $block ) {
 	$p = new WP_HTML_Tag_Processor( $block_content );
 	if ( $p->next_tag() ) {
 		$p->add_class( 'has-icon__' . $icon_name );
+		if ( $justifySpaceBetween ) {
+			$p->add_class( 'has-justified-space-between' );
+		}
+		if ( $hasNoIconFill ) {
+			$p->add_class( 'has-no-icon-fill' );
+		}
 	}
 	$block_content = $p->get_updated_html();
 

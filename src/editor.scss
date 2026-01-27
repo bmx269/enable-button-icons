@@ -25,6 +25,22 @@ $wordpress: "data:image/svg+xml;utf8,<svg width='20' height='20' xmlns='http://w
 
 	.wp-block-button__link {
 
+		// Styles the icon.
+		&::after, &::before {
+			display: inline-block;
+			background-color: currentColor;
+			-webkit-mask-size: contain;
+			mask-size: contain;
+			-webkit-mask-position:center;
+			mask-position:center;
+			-webkit-mask-repeat: no-repeat;
+			mask-repeat: no-repeat;
+			height: 0.8em;
+			width: 0.45em;
+			mask-image: url( $chevron_right );
+			-webkit-mask-image: url( $chevron_right );
+		}
+
 		&::after {
 			content: "";
 		}
@@ -343,6 +359,16 @@ $wordpress: "data:image/svg+xml;utf8,<svg width='20' height='20' xmlns='http://w
 		border-radius: 2px;
 		padding: 2px;
 		width: 100%;
+	}
+
+	.button-icon-picker__settings {
+		flex-wrap: wrap;
+		gap: 16px;
+		
+		.components-toggle-control {
+			flex-basis: 100%;
+			margin-bottom: 0;
+		}
 	}
 }
 

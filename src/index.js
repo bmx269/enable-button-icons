@@ -71,7 +71,15 @@ function addAttributes( settings ) {
 		},
 		customIconColor: {
 			type: 'string'
-		}
+		},
+		hasNoIconFill: {
+			type: 'boolean',
+			default: false,
+		},
+		justifySpaceBetween: {
+			type: 'boolean',
+			default: false,
+		},
 	};
 
 	const newSettings = {
@@ -124,7 +132,7 @@ const withBlockControls = createHigherOrderComponent( ( BlockEdit ) => {
 		}
 
 		const { attributes, iconColor, setIconColor, setAttributes, style, clientId } = props;
-		const { icon, iconName, iconPositionLeft, customIconColor } = attributes;
+		const { icon, iconName, iconPositionLeft, customIconColor, justifySpaceBetween } = attributes;
 		const { allowedMimeTypes } = GetAllowedMimeTypes();
 		const isSVGUploadAllowed = allowedMimeTypes
 			? Object.values( allowedMimeTypes ).includes( 'image/svg+xml' )
@@ -297,6 +305,20 @@ const withBlockControls = createHigherOrderComponent( ( BlockEdit ) => {
 									} }
 								/>
 							</PanelRow>
+							<PanelRow>
+								<ToggleControl
+									label={ __(
+										'Justify space between',
+										'enable-button-icons'
+									) }
+									checked={ justifySpaceBetween }
+									onChange={ () => {
+										setAttributes( {
+											justifySpaceBetween: ! justifySpaceBetween,
+										} );
+									} }
+								/>
+							</PanelRow>
 						</PanelBody>
 					</InspectorControls>
 					<InspectorControls group="color">
@@ -308,7 +330,7 @@ const withBlockControls = createHigherOrderComponent( ( BlockEdit ) => {
 									colorValue: validColorValue,
 									onColorChange: ( value ) => {
 										setIconColor( value );
-						
+			
 										setAttributes( {
 											customIconColor: value
 										} );
@@ -382,8 +404,10 @@ function addClasses( BlockListBlock ) {
 
 		const classes = classnames( props?.className, {
 			[ `has-icon__${ attributes?.iconName }` ]: attributes?.iconName,
-			'has-icon__custom': attributes?.icon,
+			'has-icon__custom': attributes?.icon && ! attributes?.iconName,
 			'has-icon-position__left': attributes?.iconPositionLeft,
+			'has-justified-space-between': attributes?.justifySpaceBetween,
+			'has-no-icon-fill': attributes?.hasNoIconFill,
 			[ `${ selectorClassname }` ]: true,
 		} );
 
