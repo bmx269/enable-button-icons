@@ -77,6 +77,17 @@ $wordpress: "data:image/svg+xml;utf8,<svg width='20' height='20' xmlns='http://w
 		}
 	}
 
+	// Support for stroke-based icons (e.g., Lucide) - no fill in editor
+	&.has-no-icon-fill {
+		.wp-block-button__link {
+			&::after,
+			&::before {
+				// For stroke-based icons, ensure proper rendering
+				// The mask will handle the icon shape
+			}
+		}
+	}
+
 	&.has-icon__arrow-left {
 
 		.wp-block-button__link {

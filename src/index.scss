@@ -35,6 +35,17 @@
 		}
 	}
 
+	// Support for stroke-based icons (e.g., Lucide)
+	&.has-no-icon-fill {
+		.wp-block-button__link {
+			span {
+				svg {
+					fill: none;
+				}
+			}
+		}
+	}
+
 	&.has-icon__arrow-left,
 	&.has-icon__arrow-right,
 	&.has-icon__cloud,
