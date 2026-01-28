@@ -20,9 +20,11 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Enqueue Editor scripts.
+ *
+ * @since 0.1.0
  */
 function enable_button_icons_enqueue_block_editor_assets() {
-	$asset_file  = include plugin_dir_path( __FILE__ ) . 'build/index.asset.php';
+	$asset_file = include plugin_dir_path( __FILE__ ) . 'build/index.asset.php';
 
 	wp_enqueue_script(
 		'enable-button-icons-editor-scripts',
@@ -42,10 +44,12 @@ add_action( 'enqueue_block_editor_assets', 'enable_button_icons_enqueue_block_ed
 
 /**
  * Enqueue Editor styles.
+ *
+ * @since 0.1.0
  */
 function enable_button_icons_enqueue_block_assets() {
-	if( is_admin() ){
-		$asset_file  = include plugin_dir_path( __FILE__ ) . 'build/index.asset.php';
+	if ( is_admin() ) {
+		$asset_file = include plugin_dir_path( __FILE__ ) . 'build/index.asset.php';
 
 		wp_enqueue_style(
 			'enable-button-icons-editor-styles',
@@ -56,8 +60,10 @@ function enable_button_icons_enqueue_block_assets() {
 add_action( 'enqueue_block_assets', 'enable_button_icons_enqueue_block_assets' );
 
 /**
- * Enqueue block styles 
+ * Enqueue block styles.
  * (Applies to both frontend and Editor)
+ *
+ * @since 0.1.0
  */
 function enable_button_icons_block_styles() {
 	wp_enqueue_block_style(
@@ -138,8 +144,70 @@ function enable_button_icons_render_block_button( $block_content, $block ) {
 	}
 	$block_content = $p->get_updated_html();
 
+	// Sanitize SVG content to prevent XSS attacks.
+	$allowed_svg_tags = array(
+		'svg'      => array(
+			'xmlns'       => true,
+			'fill'        => true,
+			'viewbox'     => true,
+			'role'        => true,
+			'aria-hidden' => true,
+			'focusable'   => true,
+			'width'       => true,
+			'height'      => true,
+			'class'       => true,
+		),
+		'path'     => array(
+			'd'           => true,
+			'fill'        => true,
+			'stroke'      => true,
+			'stroke-width' => true,
+			'stroke-linecap' => true,
+			'stroke-linejoin' => true,
+		),
+		'circle'   => array(
+			'cx'     => true,
+			'cy'     => true,
+			'r'      => true,
+			'fill'   => true,
+			'stroke' => true,
+		),
+		'rect'     => array(
+			'x'      => true,
+			'y'      => true,
+			'width'  => true,
+			'height' => true,
+			'fill'   => true,
+			'stroke' => true,
+		),
+		'polygon'  => array(
+			'points' => true,
+			'fill'   => true,
+			'stroke' => true,
+		),
+		'polyline' => array(
+			'points' => true,
+			'fill'   => true,
+			'stroke' => true,
+		),
+		'line'     => array(
+			'x1'     => true,
+			'y1'     => true,
+			'x2'     => true,
+			'y2'     => true,
+			'stroke' => true,
+		),
+		'g'        => array(
+			'fill'   => true,
+			'stroke' => true,
+		),
+	);
+
+	// Sanitize the icon SVG.
+	$sanitized_icon = wp_kses( $icon, $allowed_svg_tags );
+
 	// Add the SVG icon either to the left or right of the button text.
-	$icon_markup = '<span class="wp-block-button__link-icon' . $icon_color_class . '" aria-hidden="true"' . $icon_style_attr . '>' . $icon . '</span>';
+	$icon_markup = '<span class="wp-block-button__link-icon' . $icon_color_class . '" aria-hidden="true"' . $icon_style_attr . '>' . $sanitized_icon . '</span>';
 	
 	$block_content = $position_left
 		? preg_replace( '/(<a[^>]*>)(.*?)(<\/a>)/i', '$1' . $icon_markup . '$2$3', $block_content )
