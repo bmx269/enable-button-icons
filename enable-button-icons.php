@@ -74,43 +74,76 @@ add_action( 'init', 'enable_button_icons_block_styles' );
 
 /**
  * Render icons on the frontend.
+ *
+ * @since 0.1.0
+ * @param string $block_content The block content.
+ * @param array  $block         The block data.
+ * @return string Modified block content with icon.
  */
 function enable_button_icons_render_block_button( $block_content, $block ) {
 	if ( ! isset( $block['attrs']['icon'] ) && ! isset( $block['attrs']['iconName'] ) ) {
 		return $block_content;
 	}
-	
-	$icon                = $block['attrs']['icon'];
-	$icon_name           = $block['attrs']['iconName'] ? $block['attrs']['iconName'] : 'custom';
-	$positionLeft        = isset( $block['attrs']['iconPositionLeft'] ) ? $block['attrs']['iconPositionLeft'] : false;
-	$justifySpaceBetween = isset( $block['attrs']['justifySpaceBetween'] ) ? $block['attrs']['justifySpaceBetween'] : false;
-	$hasNoIconFill       = isset( $block['attrs']['hasNoIconFill'] ) ? $block['attrs']['hasNoIconFill'] : false;
-	
+
+	$icon                 = isset( $block['attrs']['icon'] ) ? $block['attrs']['icon'] : '';
+	$icon_name            = isset( $block['attrs']['iconName'] ) ? $block['attrs']['iconName'] : 'custom';
+	$position_left        = isset( $block['attrs']['iconPositionLeft'] ) ? $block['attrs']['iconPositionLeft'] : false;
+	$justify_space_between = isset( $block['attrs']['justifySpaceBetween'] ) ? $block['attrs']['justifySpaceBetween'] : false;
+	$has_no_icon_fill     = isset( $block['attrs']['hasNoIconFill'] ) ? $block['attrs']['hasNoIconFill'] : false;
+	$icon_size            = isset( $block['attrs']['iconSize'] ) ? $block['attrs']['iconSize'] : '';
+	$icon_spacing         = isset( $block['attrs']['iconSpacing'] ) ? $block['attrs']['iconSpacing'] : '';
+
 	$icon_color_class = '';
-	$icon_color = '';
-	if( isset( $block['attrs']['iconColor'] ) ){
-		$icon_color_class = ' has-' . $block['attrs']['iconColor'] . '-color';
+	$icon_color       = '';
+	if ( isset( $block['attrs']['iconColor'] ) ) {
+		$icon_color_class = ' has-' . sanitize_html_class( $block['attrs']['iconColor'] ) . '-color';
 	} elseif ( isset( $block['attrs']['customIconColor'] ) ) {
-		$icon_color = 'style="color:' . $block['attrs']['customIconColor'] . ';"';
+		$icon_color = 'style="color:' . esc_attr( $block['attrs']['customIconColor'] ) . ';"';
 	}
-	
+
+	// Build inline styles for icon size and color.
+	$icon_styles = array();
+	$link_styles = array();
+
+	if ( $icon_size ) {
+		// Set CSS custom properties for icon sizing.
+		$link_styles[] = '--icon-size:' . esc_attr( $icon_size );
+	}
+	if ( $icon_spacing ) {
+		$link_styles[] = '--icon-spacing:' . esc_attr( $icon_spacing );
+	}
+	if ( isset( $block['attrs']['customIconColor'] ) ) {
+		$icon_styles[] = 'color:' . esc_attr( $block['attrs']['customIconColor'] );
+	}
+
+	$icon_style_attr = ! empty( $icon_styles ) ? ' style="' . esc_attr( implode( ';', $icon_styles ) ) . '"' : '';
+
 	// Append the icon class to the block.
 	$p = new WP_HTML_Tag_Processor( $block_content );
 	if ( $p->next_tag() ) {
-		$p->add_class( 'has-icon__' . $icon_name );
-		if ( $justifySpaceBetween ) {
+		$p->add_class( 'has-icon__' . sanitize_html_class( $icon_name ) );
+		if ( $justify_space_between ) {
 			$p->add_class( 'has-justified-space-between' );
 		}
-		if ( $hasNoIconFill ) {
+		if ( $has_no_icon_fill ) {
 			$p->add_class( 'has-no-icon-fill' );
+		}
+		// Apply custom properties to the link.
+		if ( ! empty( $link_styles ) && $p->next_tag( 'a' ) ) {
+			$existing_style = $p->get_attribute( 'style' );
+			$new_styles     = esc_attr( implode( ';', $link_styles ) );
+			$final_style    = $existing_style ? $existing_style . ';' . $new_styles : $new_styles;
+			$p->set_attribute( 'style', $final_style );
 		}
 	}
 	$block_content = $p->get_updated_html();
 
-	// Add the SVG icon either to the left of right of the button text.
-	$block_content = $positionLeft 
-		? preg_replace( '/(<a[^>]*>)(.*?)(<\/a>)/i', '$1<span class="wp-block-button__link-icon' . $icon_color_class . '" aria-hidden="true" ' . $icon_color . '>' . $icon . '</span>$2$3', $block_content )
-		: preg_replace( '/(<a[^>]*>)(.*?)(<\/a>)/i', '$1$2<span class="wp-block-button__link-icon' . $icon_color_class . '" aria-hidden="true" ' . $icon_color . '>' . $icon . '</span>$3', $block_content );
+	// Add the SVG icon either to the left or right of the button text.
+	$icon_markup = '<span class="wp-block-button__link-icon' . $icon_color_class . '" aria-hidden="true"' . $icon_style_attr . '>' . $icon . '</span>';
+	
+	$block_content = $position_left
+		? preg_replace( '/(<a[^>]*>)(.*?)(<\/a>)/i', '$1' . $icon_markup . '$2$3', $block_content )
+		: preg_replace( '/(<a[^>]*>)(.*?)(<\/a>)/i', '$1$2' . $icon_markup . '$3', $block_content );
 
 	return $block_content;
 }

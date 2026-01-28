@@ -47,6 +47,13 @@ import { bolt as defaultIcon } from './icons/bolt';
  * @since 0.1.0
  * @param {Object} settings
  */
+/**
+ * Add the attributes needed for button icons.
+ *
+ * @since 0.1.0
+ * @param {Object} settings Block settings.
+ * @return {Object} Modified block settings.
+ */
 function addAttributes( settings ) {
 	if ( 'core/button' !== settings.name ) {
 		return settings;
@@ -55,7 +62,7 @@ function addAttributes( settings ) {
 	// Add the icon attributes.
 	const iconAttributes = {
 		icon: {
-			//string of icon svg (custom, media library)
+			// String of icon svg (custom, media library).
 			type: 'string',
 		},
 		iconPositionLeft: {
@@ -63,14 +70,14 @@ function addAttributes( settings ) {
 			default: false,
 		},
 		iconName: {
-			//name prop of icon (WordPress icon library, etc)
+			// Name prop of icon (WordPress icon library, etc).
 			type: 'string',
 		},
 		iconColor: {
-			type: 'string'
+			type: 'string',
 		},
 		customIconColor: {
-			type: 'string'
+			type: 'string',
 		},
 		hasNoIconFill: {
 			type: 'boolean',
@@ -79,6 +86,12 @@ function addAttributes( settings ) {
 		justifySpaceBetween: {
 			type: 'boolean',
 			default: false,
+		},
+		iconSize: {
+			type: 'string',
+		},
+		iconSpacing: {
+			type: 'string',
 		},
 	};
 
@@ -399,6 +412,8 @@ function addClasses( BlockListBlock ) {
 			iconPositionLeft: attributes?.iconPositionLeft,
 			customIconColor: attributes?.customIconColor,
 			style: attributes?.style,
+			iconSize: attributes?.iconSize,
+			iconSpacing: attributes?.iconSpacing,
 			hasBlockGapSupport: true,
 		} );
 
