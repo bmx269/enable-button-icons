@@ -62,14 +62,14 @@ export function getIconStyle( {
 	}
 	
 	const dataUri = svgToDataUri( svg );
-	rules.push( `mask-image: url( ${ dataUri } );` );
-	rules.push( `-webkit-mask-image: url( ${ dataUri } );` );
+	rules.push( `mask-image: url( ${ dataUri } ) !important;` );
+	rules.push( `-webkit-mask-image: url( ${ dataUri } ) !important;` );
 	if ( customIconColor ){
 		rules.push( `color: ${ customIconColor };` );
 	}
 	if ( rules.length ) {
 		output = `${ appendSelectors( selector ) } {
-			${ rules.join( '; ' ) };
+			${ rules.join( ' ' ) };
 		}`;
 	}
 	return output;

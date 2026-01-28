@@ -25,27 +25,7 @@ $wordpress: "data:image/svg+xml;utf8,<svg width='20' height='20' xmlns='http://w
 
 	.wp-block-button__link {
 
-		// Styles the icon.
-		&::after, &::before {
-			display: inline-block;
-			background-color: currentColor;
-			-webkit-mask-size: contain;
-			mask-size: contain;
-			-webkit-mask-position:center;
-			mask-position:center;
-			-webkit-mask-repeat: no-repeat;
-			mask-repeat: no-repeat;
-			height: 0.8em;
-			width: 0.45em;
-			mask-image: url( $chevron_right );
-			-webkit-mask-image: url( $chevron_right );
-		}
-
-		&::after {
-			content: "";
-		}
-
-		// Styles the icon.
+		// Styles the icon using pseudo-elements
 		&::after,
 		&::before {
 			display: inline-block;
@@ -58,8 +38,15 @@ $wordpress: "data:image/svg+xml;utf8,<svg width='20' height='20' xmlns='http://w
 			mask-repeat: no-repeat;
 			height: 1em;
 			width: 1em;
-			//mask-image: url( $chevron_right );
-			//-webkit-mask-image: url( $chevron_right );
+		}
+
+		// By default, icon appears on the right (after the text)
+		&::after {
+			content: "";
+		}
+
+		&::before {
+			content: none;
 		}
 	}
 
@@ -67,6 +54,7 @@ $wordpress: "data:image/svg+xml;utf8,<svg width='20' height='20' xmlns='http://w
 
 		.wp-block-button__link {
 
+			// When positioned left, icon appears before the text
 			&::after {
 				content: none;
 			}
